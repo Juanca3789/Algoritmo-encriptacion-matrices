@@ -1,3 +1,10 @@
+/****************************************
+	Proyecto encriptación con matrices
+	Juan Carlos Clavijo Triviño
+	Juan Sebastían Carvajal Cardenas
+	2023 - Estructuras de datos
+****************************************/
+
 #include <iostream>
 #include <string>
 #include <string.h>

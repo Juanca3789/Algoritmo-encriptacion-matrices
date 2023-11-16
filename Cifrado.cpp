@@ -2,44 +2,37 @@
 #include <string>
 #include <string.h>
 #include <math.h>
+#include <fstream>
 #include <windows.h>
 #include "inversa.cpp"
 #include "modulos.cpp"
 #include "pruebaColad.cpp"
-#define ascii 437
+#define ascii 437 //Tabla ascii de encriptacion
 using namespace std;
 
 Cola* correrc(Cola* palabra, int clave); //Desplaza n caracteres de la tabla ascii a cada letra de la plabra
 Cola* encriptP(Cola* palabra, Cola* clave); //Encripta la palabra con una string clave utilizando el metodo de Hill
 Cola* desencriptP(Cola* palabra, Cola* clave);
-string encriptar(Cola* palabra, int clave1, Cola* clave2); //Junta los dos metodos de encriptación y retorna el string cifrado
-string desencriptar(Cola* encriptado, int clave1, Cola* clave2); //Retorna el string descifrado
+string encriptar(string palabra, int clave1, string clave2); //Junta los dos metodos de encriptación y retorna el string cifrado
+string desencriptar(string encriptado, int clave1, string clave2); //Retorna el string descifrado
 
 int main(){
 	SetConsoleCP(ascii);
 	SetConsoleOutputCP(ascii);
-	Cola* pal = new Cola;
-	Cola* clave = new Cola;
-	Cola* encr = new Cola;
-	string str;
+	string str, clav;
 	int clavenum;
 	cout<<"Ingrese la palabra a encriptar: "; getline(cin, str, '\n');
-	pal->strTocola(str);
-	cout<<"Ingrese la palabra clave: "; getline(cin, str, '\n');
-	clave->strTocola(str);
+	cout<<"Ingrese la palabra clave: "; getline(cin, clav, '\n');
 	cout<<"Ingrese la clave numerica: "; cin>>clavenum;
 	cin.ignore();
-	string enc = encriptar(pal, clavenum, clave);
+	string enc = encriptar(str, clavenum, clav);
 	cout<<endl<<"Palabra encriptada: "<<enc<<endl;
-	encr->strTocola(enc);
-	cout<<"Ahora, ingrese la clave nuevamente para desencriptar la palabra: "; getline(cin, str, '\n');
-	clave->strTocola(str);
-	string des = desencriptar(encr, clavenum, clave);
+	cout<<"Ahora, ingrese la clave nuevamente para desencriptar la palabra: "; getline(cin, clav, '\n');
+	string des = desencriptar(enc, clavenum, clav);
 	cout<<endl<<"Palabra desencriptada: "<<des<<endl;
 }
 
 //Funciones
-
 Cola* correrc(Cola* palabra, int clave){
 	Cola* Res = new Cola;
 	while(!palabra->vacia()){
@@ -301,19 +294,27 @@ Cola* desencriptP(Cola* palabra, Cola* clave){
 	return res; //Retorna la cola desencriptada
 }
 
-string encriptar(Cola* palabra, int clave1, Cola* clave2){
+string encriptar(string palabra, int clave1, string clave2){
+	Cola* pal = new Cola;
+	Cola* cla = new Cola; 
 	Cola* aux = new Cola;
+	pal->strTocola(palabra);
+	cla->strTocola(clave2);
 	string resultado; //Crea una nueva cadena para retornar la cadena encriptada
-	aux = correrc(palabra, clave1); //Realiza la encriptación corriendo caracteres
-	aux = encriptP(aux, clave2); //Encripta la palabra con el corrimiento de caracteres usando la clave
+	aux = correrc(pal, clave1); //Realiza la encriptación corriendo caracteres
+	aux = encriptP(aux, cla); //Encripta la palabra con el corrimiento de caracteres usando la clave
 	resultado = aux->colaTostr();
 	return resultado; //Retorna la palabra encriptada
 }
 
-string desencriptar(Cola* encriptado, int clave1, Cola* clave2){
+string desencriptar(string encriptado, int clave1, string clave2){
+	Cola* enc = new Cola;
+	Cola* cla = new Cola;
 	Cola* aux = new Cola;
+	enc->strTocola(encriptado);
+	cla->strTocola(clave2);
 	string resultado; //Crea una nueva cadena para retornar la cadena desencriptada
-	aux = desencriptP(encriptado, clave2); //Desencripta la palabra usando la misma clave que se usó para encriptar
+	aux = desencriptP(enc, cla); //Desencripta la palabra usando la misma clave que se usó para encriptar
 	aux = correrc(aux, -1 * clave1); //Realiza la desencriptación retrocediendo la misma cantidad de caracteres que al inicio
 	resultado = aux->colaTostr();
 	return resultado; //Retorna la cadena desencriptada

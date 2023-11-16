@@ -1,63 +1,59 @@
-/****************************************
-	Proyecto encriptación con matrices
-	Juan Carlos Clavijo Triviño
-	Juan Sebastían Carvajal Cardenas
-	2023 - Estructuras de datos
-****************************************/
-
 #include <iostream>
 #include <string>
 #include <string.h>
 #include <math.h>
+#include <windows.h>
 #include "inversa.cpp"
 #include "modulos.cpp"
+#include "pruebaColad.cpp"
+#define ascii 437
 using namespace std;
 
-string correrc(string palabra, int clave); //Desplaza n caracteres de la tabla ascii a cada letra de la plabra
-string encriptP(string palabra, string clave); //Encripta la palabra con una string clave utilizando el metodo de Hill
-string desencriptP(string palabra, string clave);
-string encriptar(string palabra, int clave1, string clave2); //Junta los dos metodos de encriptación y retorna el string cifrado
-string desencriptar(string encriptado, int clave1, string clave2); //Retorna el string descifrado
+Cola* correrc(Cola* palabra, int clave); //Desplaza n caracteres de la tabla ascii a cada letra de la plabra
+Cola* encriptP(Cola* palabra, Cola* clave); //Encripta la palabra con una string clave utilizando el metodo de Hill
+Cola* desencriptP(Cola* palabra, Cola* clave);
+string encriptar(Cola* palabra, int clave1, Cola* clave2); //Junta los dos metodos de encriptación y retorna el string cifrado
+string desencriptar(Cola* encriptado, int clave1, Cola* clave2); //Retorna el string descifrado
 
 int main(){
-	string palabra;
-	cout<<"Ingrese la palabra a encriptar: ";
-	getline(cin, palabra, '\n');
-	string clavepal;
-	cout<<"Ingrese la palabra clave: ";
-	getline(cin, clavepal, '\n');
+	SetConsoleCP(ascii);
+	SetConsoleOutputCP(ascii);
+	Cola* pal = new Cola;
+	Cola* clave = new Cola;
+	Cola* encr = new Cola;
+	string str;
 	int clavenum;
-	cout<<"Ingrese la clave numerica: ";
-	cin>>clavenum;
-	string enc = encriptar(palabra, clavenum, clavepal);
-	cout<<endl<<enc<<endl;
-	string des = desencriptar(enc, clavenum, clavepal);
+	cout<<"Ingrese la palabra a encriptar: "; getline(cin, str, '\n');
+	pal->strTocola(str);
+	cout<<"Ingrese la palabra clave: "; getline(cin, str, '\n');
+	clave->strTocola(str);
+	cout<<"Ingrese la clave numerica: "; cin>>clavenum;
+	cin.ignore();
+	string enc = encriptar(pal, clavenum, clave);
+	cout<<endl<<"Palabra encriptada: "<<enc<<endl;
+	encr->strTocola(enc);
+	cout<<"Ahora, ingrese la clave nuevamente para desencriptar la palabra: "; getline(cin, str, '\n');
+	clave->strTocola(str);
+	string des = desencriptar(encr, clavenum, clave);
 	cout<<endl<<"Palabra desencriptada: "<<des<<endl;
 }
 
 //Funciones
 
-string correrc(string palabra, int clave){
-	string resultado = "";
-	for(int i=0; i <= palabra.length(); i++){
-		char letra = palabra[i]; //Obtiene cada letra de la palabra ingresada
-		if(letra >= 'a' && letra <= 'z'){ 
-			if(letra + clave < 256 && letra + clave > 0){
-				letra = letra + clave; //Desplaza las letra dentro de la tabla ascii (Mantiene los simbolos)
-			}
+Cola* correrc(Cola* palabra, int clave){
+	Cola* Res = new Cola;
+	while(!palabra->vacia()){
+		int letra = palabra->extraer(); //Obtiene cada letra de la palabra ingresada
+		if(letra + clave < 256 && letra + clave > 0){
+			letra = letra + clave; //Desplaza las letra dentro de la tabla ascii
 		}
-		else if (letra >= 'A' && letra <= 'Z'){
-			if(letra + clave < 256 && letra + clave > 0){
-				letra = letra + clave;
-			}
-		}
-		resultado += letra; //Almacena cada letra en una nueva cadena
+		Res->insertar(letra);
 	}
-	return resultado; //Retorna la cadena
+	return Res;//Retorna la cadena en forma de cola
 }
 
-string encriptP(string palabra, string clave){
-	double raiz = sqrt(clave.length()); //obtiene la raiz de la longitud de la clave para crear una matriz cuadrada
+Cola* encriptP(Cola* palabra, Cola* clave){
+	double raiz = sqrt(clave->length()); //obtiene la raiz de la longitud de la clave para crear una matriz cuadrada
 	double dec = (raiz - (int)raiz);
 	double red = (1 - dec);
 	int cuadrado = 0;
@@ -67,21 +63,20 @@ string encriptP(string palabra, string clave){
 	else{
 		cuadrado = raiz;
 	}
-	double **matrizClave = new double*[cuadrado]; //crea un arreglo de punteros con dimension de la matriz cuadrada
+	int **matrizClave = new int*[cuadrado]; //crea un arreglo de punteros con dimension de la matriz cuadrada
 	for(int i = 0; i < cuadrado; i++){
-		matrizClave[i] = new double[cuadrado]; //crea un arreglo de numeros de la misma dimensión dentro de cada puntero
+		matrizClave[i] = new int[cuadrado]; //crea un arreglo de numeros de la misma dimensión dentro de cada puntero
 	}
-	int cont = 0;
+	
 	for(int i = 0; i < cuadrado; i++){
 		for(int j = 0; j < cuadrado; j++){
-			if(cont < clave.length()){
-				char letra = clave[cont]; //obtiene cada letra de la clave
+			if(!clave->vacia()){
+				int letra = clave->extraer(); //obtiene cada letra de la clave
 				matrizClave[j][i] = letra; //almacena cada letra en forma vertical
 			}
 			else{
-				matrizClave[j][i] = ' '; //llena los espacios sobrantes con espacios (ASCII : 32)
+				matrizClave[j][i] = 32; //llena los espacios sobrantes con espacios (ASCII : 32)
 			}
-			cont++;
 		}
 	}
 	/*
@@ -94,7 +89,7 @@ string encriptP(string palabra, string clave){
 	}
 	cout<<endl;
 	*/
-	double div = (double(palabra.length())/double(cuadrado)); //Divide la longitud de la palabra a encriptar entre el tamaño de la matriz clave para que se permita la multiplicacion
+	double div = (double(palabra->length())/double(cuadrado)); //Divide la longitud de la palabra a encriptar entre el tamaño de la matriz clave para que se permita la multiplicacion
 	dec = div - int(div);
 	red = (1 - dec);
 	int col = 0;
@@ -108,17 +103,16 @@ string encriptP(string palabra, string clave){
 	for(int i = 0; i < col; i++){
 		matrizPal[i] = new int[cuadrado]; //crea un arreglo de enteros con la misma cantidad de columnas que la matriz clave contiene de filas
 	}
-	cont = 0;
+	
 	for(int i = 0; i < cuadrado; i++){
 		for(int j = 0; j < col; j++){
-			if(cont < palabra.length()){
-				char letra = palabra[cont]; //obtiene cada letra de la palabra a encriptar
+			if(!palabra->vacia()){
+				int letra = palabra->extraer(); //obtiene cada letra de la palabra a encriptar
 				matrizPal[j][i] = letra; //almacena cada letra en forma de columnas con su equivalente ascii
 			}
 			else{
-				matrizPal[j][i] = ' '; //ocupa los espacios restantes con espacios (ASCII : 32)
+				matrizPal[j][i] = 32; //ocupa los espacios restantes con espacios (ASCII : 32)
 			}
-			cont++;
 		}
 	}
 	/*
@@ -137,18 +131,19 @@ string encriptP(string palabra, string clave){
 	}
 	for(int k = 0; k < col; k++){
 		for(int l = 0; l < cuadrado; l++){
-			cont = 0;
+			int cont = 0;
 			for(int i = 0; i < cuadrado; i++){
 				cont += (matrizPal[k][i] * matrizClave[i][l]); //Realiza la multiplicacion entre las dos matrices
 			}
 			matrizRes[k][l] = cont;
 		}
 	}
-	string res = "";
+	
+	Cola* res = new Cola;
 	for(int i = 0; i < col; i++){
 		for(int j = 0; j < cuadrado; j++){
 			matrizRes[i][j] = (matrizRes[i][j]%223) + 32; //Halla el modulo del resultado entre los 223 caracteres comprendidos entre 32 y 255, luego suma 32 para evitar los caracteres no imprimibles
-			res += matrizRes[i][j]; //Guarda en la nueva cadena cada elemento de la matriz encriptada
+			res->insertar(matrizRes[i][j]); //Guarda en la nueva cola cada elemento de la matriz encriptada
 		}
 	}
 	/*
@@ -163,11 +158,11 @@ string encriptP(string palabra, string clave){
 	delete []*matrizPal;
 	delete []*matrizRes;
 	delete []*matrizClave; //Libera la mamoria de las matrices utlizadas
-	return res; //Retorna la cadena encriptada
+	return res; //Retorna la cola de la cadena encriptada
 }
 
-string desencriptP(string palabra, string clave){
-	double raiz = sqrt(clave.length()); //obtiene la raiz de la longitud de la clave para crear una matriz cuadrada
+Cola* desencriptP(Cola* palabra, Cola* clave){
+	double raiz = sqrt(clave->length()); //obtiene la raiz de la longitud de la clave para crear una matriz cuadrada
 	double dec = (raiz - (int)raiz);
 	double red = (1 - dec);
 	int cuadrado = 0;
@@ -183,17 +178,16 @@ string desencriptP(string palabra, string clave){
 		matrizClave[i] = new double[cuadrado];
 		matrizinv[i] = new double[cuadrado];
 	}
-	int cont = 0;
+	
 	for(int i = 0; i < cuadrado; i++){
 		for(int j = 0; j < cuadrado; j++){
-			if(cont < clave.length()){
-				char letra = clave[cont]; //obtiene cada caracter de la palabra clave
+			if(!clave->vacia()){
+				int letra = clave->extraer(); //obtiene cada caracter de la palabra clave
 				matrizClave[j][i] = letra; //Almacena cada caracter de manera vertical en su forma equivalente ascii
 			}
 			else{
-				matrizClave[j][i] = ' '; //Llena el restante de la matriz con espacios (ASCII : 32)
+				matrizClave[j][i] = 32; //Llena el restante de la matriz con espacios (ASCII : 32)
 			}
-			cont++;
 		}
 	}
 	/*
@@ -230,7 +224,7 @@ string desencriptP(string palabra, string clave){
 	}
 	cout<<endl;
 	*/
-	double div = (double(palabra.length())/double(cuadrado)); //Calcula la cantidad de filas necesarias para que la matriz palabra sea multplicable
+	double div = (double(palabra->length())/double(cuadrado)); //Calcula la cantidad de filas necesarias para que la matriz palabra sea multplicable
 	dec = div - int(div);
 	red = (1 - dec);
 	int col = 0;
@@ -244,27 +238,11 @@ string desencriptP(string palabra, string clave){
 	for(int i = 0; i < col; i++){
 		matrizPal[i] = new double[cuadrado];
 	}
-	cont = 0;
-	/*
-	for(int i = 0; i < cuadrado; i++){
-		for(int j = 0; j < col; j++){
-			if(cont < palabra.length()){
-				char letra = palabra[cont];
-				matrizPal[j][i] = letra;
-				if(matrizPal[j][i] < 0){
-					matrizPal[j][i] = matrizPal[j][i] + 256;
-				}
-			}
-			else{
-				matrizPal[j][i] = ' ';
-			}
-			cont++;
-		}
-	}*/
+	
 	for(int i = 0; i < col; i++){
 		for(int j = 0; j < cuadrado; j++){
-			if(cont < palabra.length()){
-				char letra = palabra[cont]; //obtiene cada caracter de la palabra encriptada
+			if(!palabra->vacia()){
+				int letra = palabra->extraer(); //obtiene cada caracter de la palabra encriptada
 				matrizPal[i][j] = letra; //almacena su equivalente ascii 
 				if(matrizPal[i][j] < 0){
 					matrizPal[i][j] = matrizPal[i][j] + 256; //convierte los caracteres negativos propios de c++ en su equivalente ascii 
@@ -272,9 +250,8 @@ string desencriptP(string palabra, string clave){
 				matrizPal[i][j] = matrizPal[i][j] - 32; 
 			}
 			else{
-				matrizPal[i][j] = ' '; //rellena el resto de la matriz con espacios (ASCII : 32)
+				matrizPal[i][j] = 32; //rellena el resto de la matriz con espacios (ASCII : 32)
 			}
-			cont++;
 		}
 	}
 	/*
@@ -301,7 +278,7 @@ string desencriptP(string palabra, string clave){
 			matrizRes[k][l] = modulo(matrizRes[k][l], 223); //Halla el modulo de la matriz resultado, obteniendo la matriz de la palabra desencriptda
 		}
 	}
-	string res = "";
+	Cola* res = new Cola;
 	/*
 	for(int i = 0; i < col; i++){
 		cout<<"[ ";
@@ -313,27 +290,31 @@ string desencriptP(string palabra, string clave){
 	*/
 	for(int i=0; i < cuadrado; i++){
 		for(int j = 0; j < col; j++){
-			char letra = char(round(matrizRes[j][i])); //obtiene cada letra de la matriz resultado
-			res += letra; //Almacena en el string resultado cada caracter
+			int letra = int(round(matrizRes[j][i])); //obtiene cada letra de la matriz resultado
+			res->insertar(letra); //Almacena en la cola resultado cada caracter
 		}
 	}
 	delete []*matrizinv;
 	delete []*matrizPal;
 	delete []*matrizRes;
 	delete []*matrizClave;
-	return res; //Retorna la cadena desencriptada
+	return res; //Retorna la cola desencriptada
 }
 
-string encriptar(string palabra, int clave1, string clave2){
-	string resultado = ""; //Crea una nueva cadena para retornar la cadena encriptada
-	resultado = correrc(palabra, clave1); //Realiza la encriptación corriendo caracteres
-	resultado = encriptP(resultado, clave2); //Encripta la palabra con el corrimiento de caracteres usando la clave
+string encriptar(Cola* palabra, int clave1, Cola* clave2){
+	Cola* aux = new Cola;
+	string resultado; //Crea una nueva cadena para retornar la cadena encriptada
+	aux = correrc(palabra, clave1); //Realiza la encriptación corriendo caracteres
+	aux = encriptP(aux, clave2); //Encripta la palabra con el corrimiento de caracteres usando la clave
+	resultado = aux->colaTostr();
 	return resultado; //Retorna la palabra encriptada
 }
 
-string desencriptar(string encriptado, int clave1, string clave2){
-	string resultado = ""; //Crea una nueva cadena para retornar la cadena desencriptada
-	resultado = desencriptP(encriptado, clave2); //Desencripta la palabra usando la misma clave que se usó para encriptar
-	resultado = correrc(resultado, -1 * clave1); //Realiza la desencriptación retrocediendo la misma cantidad de caracteres que al inicio
+string desencriptar(Cola* encriptado, int clave1, Cola* clave2){
+	Cola* aux = new Cola;
+	string resultado; //Crea una nueva cadena para retornar la cadena desencriptada
+	aux = desencriptP(encriptado, clave2); //Desencripta la palabra usando la misma clave que se usó para encriptar
+	aux = correrc(aux, -1 * clave1); //Realiza la desencriptación retrocediendo la misma cantidad de caracteres que al inicio
+	resultado = aux->colaTostr();
 	return resultado; //Retorna la cadena desencriptada
 }

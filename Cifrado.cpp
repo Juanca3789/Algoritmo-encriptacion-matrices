@@ -10,26 +10,104 @@
 #define ascii 437 //Tabla ascii de encriptacion
 using namespace std;
 
+//Funciones Principales
 Cola* correrc(Cola* palabra, int clave); //Desplaza n caracteres de la tabla ascii a cada letra de la plabra
 Cola* encriptP(Cola* palabra, Cola* clave); //Encripta la palabra con una string clave utilizando el metodo de Hill
 Cola* desencriptP(Cola* palabra, Cola* clave);
 string encriptar(string palabra, int clave1, string clave2); //Junta los dos metodos de encriptación y retorna el string cifrado
 string desencriptar(string encriptado, int clave1, string clave2); //Retorna el string descifrado
+void crearArchivos(); //Crea los archivos de exportación si aún no existen
+
+//Funciones de Interfaz
+void encriptCons();
+void desencriptCons();
+void encriptArchpr();
+void desencriptArchpr();
+void encriptArchpe();
+void desenciptArchpe();
 
 int main(){
 	SetConsoleCP(ascii);
 	SetConsoleOutputCP(ascii);
-	string str, clav;
-	int clavenum;
-	cout<<"Ingrese la palabra a encriptar: "; getline(cin, str, '\n');
-	cout<<"Ingrese la palabra clave: "; getline(cin, clav, '\n');
-	cout<<"Ingrese la clave numerica: "; cin>>clavenum;
-	cin.ignore();
-	string enc = encriptar(str, clavenum, clav);
-	cout<<endl<<"Palabra encriptada: "<<enc<<endl;
-	cout<<"Ahora, ingrese la clave nuevamente para desencriptar la palabra: "; getline(cin, clav, '\n');
-	string des = desencriptar(enc, clavenum, clav);
-	cout<<endl<<"Palabra desencriptada: "<<des<<endl;
+	crearArchivos();
+	int opc;
+	menu:
+		system("Title Sistema de encriptacion de texto");
+		system("color f0");
+		system("cls");
+		cout<<"Menú principal: "<<endl;
+		cout<<"Seleccione una opcion: "<<endl;
+		cout<<"\t1. Encriptar texto desde la consola"<<endl;
+		cout<<"\t2. Desencriptar texto desde la consola"<<endl;
+		cout<<"\t3. Encriptar texto desde archivo predeterminado"<<endl;
+		cout<<"\t4. Desencriptar texto desde archivo predeterminado"<<endl;
+		cout<<"\t5. Encriptar texto desde archivo personalizado"<<endl;
+		cout<<"\t6. Desencriptar texto desde archivo personalizado"<<endl;
+		cout<<"\t7. Consultar texto almacenado en archivos"<<endl;
+		cout<<"\t0. Cerrar programa"<<endl;
+		cout<<"\t   Digite una opcion: "; cin>>opc;
+		cin.ignore();
+		switch (opc){
+			case 0:{
+				goto end;
+				break;
+			}
+			case 1:{
+				system("Title Encriptacion Consola");
+				system("cls");
+				encriptCons();
+				system("PAUSE");
+				goto menu;
+				break;
+			}
+			case 2:{
+				system("Title Desencriptacion Consola");
+				system("cls");
+				desencriptCons();
+				system("PAUSE");
+				goto menu;
+				break;
+			}
+			case 3:{
+				system("Title Encriptacion Archivo Predeterminado");
+				system("cls");
+				encriptCons();
+				system("PAUSE");
+				goto menu;
+				break;
+			}
+			case 4:{
+				system("Title Desencriptacion Archivo Predeterminado");
+				system("cls");
+				encriptCons();
+				system("PAUSE");
+				goto menu;
+				break;
+			}
+			case 5:{
+				system("Title Encriptacion Archivo Personalizado");
+				system("cls");
+				encriptCons();
+				system("PAUSE");
+				goto menu;
+				break;
+			}
+			case 6:{
+				system("Title Desencriptacion Archivo Personalizado");
+				system("cls");
+				encriptCons();
+				system("PAUSE");
+				goto menu;
+				break;
+			}
+			default:{
+				cout<<"Ingrese una opción valida"<<endl;
+				goto menu;
+				break;
+			}
+		}
+	end:
+		return 0;
 }
 
 //Funciones
@@ -304,6 +382,9 @@ string encriptar(string palabra, int clave1, string clave2){
 	aux = correrc(pal, clave1); //Realiza la encriptación corriendo caracteres
 	aux = encriptP(aux, cla); //Encripta la palabra con el corrimiento de caracteres usando la clave
 	resultado = aux->colaTostr();
+	delete pal;
+	delete cla;
+	delete aux;
 	return resultado; //Retorna la palabra encriptada
 }
 
@@ -317,5 +398,97 @@ string desencriptar(string encriptado, int clave1, string clave2){
 	aux = desencriptP(enc, cla); //Desencripta la palabra usando la misma clave que se usó para encriptar
 	aux = correrc(aux, -1 * clave1); //Realiza la desencriptación retrocediendo la misma cantidad de caracteres que al inicio
 	resultado = aux->colaTostr();
+	delete enc;
+	delete cla;
+	delete aux;
 	return resultado; //Retorna la cadena desencriptada
+}
+
+void crearArchivos(){ //Crea los archivos necesarios si aun no existen
+	ifstream entrada;
+	ofstream salida;
+	entrada.open("encriptacion.txt", ios::in);
+	if(entrada.fail()){
+		entrada.close();
+		salida.open("encriptacion.txt", ios::out);
+		salida.close();
+	}
+	entrada.open("desencriptacion.txt", ios::in);
+	if(entrada.fail()){
+		entrada.close();
+		salida.open("desencriptacion.txt", ios::out);
+		salida.close();
+	}
+}
+
+//Funciones interfaz
+
+void encriptCons(){
+	string palabra, clave, encriptado;
+	int num, opc;
+	cout<<"Ingrese la palabra a encriptar: "; getline(cin, palabra, '\n');
+	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
+	encriptado = encriptar(palabra, num, clave);
+	cout<<"Palabra encriptada: "<<encriptado<<endl;
+	archivo:	
+		cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
+		if(opc == 0){
+			cout<<"Volviendo a pagina principal"<<endl;
+		}
+		else if(opc == 1){
+			ofstream salida;
+			salida.open("encriptacion.txt", ios::out);
+			for(int i = 0; i < encriptado.length(); i++){
+				salida.put(encriptado[i]);
+			}
+			cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+		}
+		else{
+			cout<<"Ingrese una opción valida"<<endl;
+			goto archivo;	
+		}
+}
+
+void desencriptCons(){
+	string palabra, clave, encriptado;
+	int num, opc;
+	cout<<"Ingrese la palabra a desencriptar: "; getline(cin, encriptado, '\n');
+	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
+	palabra = desencriptar(encriptado, num, clave);
+	cout<<"Palabra encriptada: "<<palabra<<endl;
+	archivo:
+		cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
+		if(opc == 0){
+			cout<<"Volviendo a pagina principal"<<endl;
+		}
+		else if(opc == 1){
+			ofstream salida;
+			salida.open("desencriptacion.txt", ios::out);
+			for(int i = 0; i < palabra.length(); i++){
+				salida.put(palabra[i]);
+			}
+			cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+		}
+		else{
+			cout<<"Ingrese una opción valida"<<endl;
+			goto archivo;	
+		}
+}
+
+void encriptArchpr(){
+	
+}
+
+void desencriptArchpr(){
+	
+}
+
+void encriptArchpe(){
+	
+}
+
+void desenciptArchpe(){
+	
 }

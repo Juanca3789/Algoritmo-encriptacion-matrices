@@ -71,7 +71,7 @@ int main(){
 			case 3:{
 				system("Title Encriptacion Archivo Predeterminado");
 				system("cls");
-				encriptCons();
+				encriptArchpr();
 				system("PAUSE");
 				goto menu;
 				break;
@@ -79,7 +79,7 @@ int main(){
 			case 4:{
 				system("Title Desencriptacion Archivo Predeterminado");
 				system("cls");
-				encriptCons();
+				desencriptArchpr();
 				system("PAUSE");
 				goto menu;
 				break;
@@ -439,10 +439,9 @@ void encriptCons(){
 		else if(opc == 1){
 			ofstream salida;
 			salida.open("encriptacion.txt", ios::out);
-			for(int i = 0; i < encriptado.length(); i++){
-				salida.put(encriptado[i]);
-			}
+			salida<<encriptado<<endl;
 			cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+			salida.close();
 		}
 		else{
 			cout<<"Ingrese una opción valida"<<endl;
@@ -457,7 +456,7 @@ void desencriptCons(){
 	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
 	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	palabra = desencriptar(encriptado, num, clave);
-	cout<<"Palabra encriptada: "<<palabra<<endl;
+	cout<<"Palabra desencriptada: "<<palabra<<endl;
 	archivo:
 		cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
 		if(opc == 0){
@@ -466,10 +465,9 @@ void desencriptCons(){
 		else if(opc == 1){
 			ofstream salida;
 			salida.open("desencriptacion.txt", ios::out);
-			for(int i = 0; i < palabra.length(); i++){
-				salida.put(palabra[i]);
-			}
+			salida<<palabra<<endl;
 			cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+			salida.close();
 		}
 		else{
 			cout<<"Ingrese una opción valida"<<endl;
@@ -478,11 +476,63 @@ void desencriptCons(){
 }
 
 void encriptArchpr(){
-	
+	string palabra, clave, encriptado;
+	int num, opc;
+	ifstream entrada;
+	entrada.open("desencriptacion.txt", ios::in);
+	getline(entrada, palabra, '\n');
+	cout<<"Se encriptará la palabra almacenada en 'desencriptacion.txt': "<<palabra<<endl;
+	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
+	encriptado = encriptar(palabra, num, clave);
+	cout<<"Palabra encriptada: "<<encriptado<<endl;
+	archivo:	
+		cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
+		if(opc == 0){
+			cout<<"Volviendo a pagina principal"<<endl;
+		}
+		else if(opc == 1){
+			ofstream salida;
+			salida.open("encriptacion.txt", ios::out);
+			salida<<encriptado<<endl;
+			cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+			salida.close();
+		}
+		else{
+			cout<<"Ingrese una opción valida"<<endl;
+			goto archivo;	
+		}
+	entrada.close();
 }
 
 void desencriptArchpr(){
-	
+	string palabra, clave, encriptado;
+	int num, opc;
+	ifstream entrada;
+	entrada.open("encriptacion.txt", ios::in);
+	getline(entrada, encriptado, '\n');
+	cout<<"Se encriptará la palabra almacenada en 'encriptacion.txt': "<<encriptado<<endl;
+	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
+	palabra = desencriptar(encriptado, num, clave);
+	cout<<"Palabra desencriptada: "<<palabra<<endl;
+	archivo:	
+		cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
+		if(opc == 0){
+			cout<<"Volviendo a pagina principal"<<endl;
+		}
+		else if(opc == 1){
+			ofstream salida;
+			salida.open("desencriptacion.txt", ios::out);
+			salida<<palabra<<endl;
+			cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+			salida.close();
+		}
+		else{
+			cout<<"Ingrese una opción valida"<<endl;
+			goto archivo;	
+		}
+	entrada.close();
 }
 
 void encriptArchpe(){

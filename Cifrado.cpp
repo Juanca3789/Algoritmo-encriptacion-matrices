@@ -115,7 +115,7 @@ Cola* correrc(Cola* palabra, int clave){
 	Cola* Res = new Cola;
 	while(!palabra->vacia()){
 		int letra = palabra->extraer(); //Obtiene cada letra de la palabra ingresada
-		if(letra + clave < 256 && letra + clave > 0){
+		if(letra + clave < 256 && letra + clave > 32){
 			letra = letra + clave; //Desplaza las letra dentro de la tabla ascii
 		}
 		Res->insertar(letra);
@@ -380,7 +380,16 @@ string encriptar(string palabra, int clave1, string clave2){
 	cla->strTocola(clave2);
 	string resultado; //Crea una nueva cadena para retornar la cadena encriptada
 	aux = correrc(pal, clave1); //Realiza la encriptación corriendo caracteres
-	aux = encriptP(aux, cla); //Encripta la palabra con el corrimiento de caracteres usando la clave
+	if(cla->length() > 1){
+		aux = encriptP(aux, cla); //Encripta la palabra con el corrimiento de caracteres usando la clave
+	}
+	else{
+		cout<<"La clave debe contener mas de un caracter"<<endl;
+		delete pal;
+		delete cla;
+		delete aux;
+		return "";
+	}
 	resultado = aux->colaTostr();
 	delete pal;
 	delete cla;
@@ -395,7 +404,16 @@ string desencriptar(string encriptado, int clave1, string clave2){
 	enc->strTocola(encriptado);
 	cla->strTocola(clave2);
 	string resultado; //Crea una nueva cadena para retornar la cadena desencriptada
-	aux = desencriptP(enc, cla); //Desencripta la palabra usando la misma clave que se usó para encriptar
+	if(cla->length() > 1){
+		aux = desencriptP(enc, cla); //Desencripta la palabra usando la misma clave que se usó para encriptar
+	}
+	else{
+		cout<<"La clave debe contener mas de un caracter"<<endl;
+		delete enc;
+		delete cla;
+		delete aux;
+		return "";
+	}
 	aux = correrc(aux, -1 * clave1); //Realiza la desencriptación retrocediendo la misma cantidad de caracteres que al inicio
 	resultado = aux->colaTostr();
 	delete enc;
@@ -430,22 +448,24 @@ void encriptCons(){
 	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
 	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	encriptado = encriptar(palabra, num, clave);
-	cout<<"Palabra encriptada: "<<encriptado<<endl;
 	archivo:	
-		cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
-		if(opc == 0){
-			cout<<"Volviendo a pagina principal"<<endl;
-		}
-		else if(opc == 1){
-			ofstream salida;
-			salida.open("encriptacion.txt", ios::out);
-			salida<<encriptado<<endl;
-			cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
-			salida.close();
-		}
-		else{
-			cout<<"Ingrese una opción valida"<<endl;
-			goto archivo;	
+		if(encriptado != ""){
+			cout<<"Palabra encriptada: "<<encriptado<<endl;
+			cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
+			if(opc == 0){
+				cout<<"Volviendo a pagina principal"<<endl;
+			}
+			else if(opc == 1){
+				ofstream salida;
+				salida.open("encriptacion.txt", ios::out);
+				salida<<encriptado<<endl;
+				cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+				salida.close();
+			}
+			else{
+				cout<<"Ingrese una opcion valida"<<endl;
+				goto archivo;	
+			}
 		}
 }
 
@@ -456,22 +476,24 @@ void desencriptCons(){
 	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
 	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	palabra = desencriptar(encriptado, num, clave);
-	cout<<"Palabra desencriptada: "<<palabra<<endl;
 	archivo:
-		cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
-		if(opc == 0){
-			cout<<"Volviendo a pagina principal"<<endl;
-		}
-		else if(opc == 1){
-			ofstream salida;
-			salida.open("desencriptacion.txt", ios::out);
-			salida<<palabra<<endl;
-			cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
-			salida.close();
-		}
-		else{
-			cout<<"Ingrese una opción valida"<<endl;
-			goto archivo;	
+		if(palabra != ""){
+			cout<<"Palabra desencriptada: "<<palabra<<endl;
+			cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
+			if(opc == 0){
+				cout<<"Volviendo a pagina principal"<<endl;
+			}
+			else if(opc == 1){
+				ofstream salida;
+				salida.open("desencriptacion.txt", ios::out);
+				salida<<palabra<<endl;
+				cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+				salida.close();
+			}
+			else{
+				cout<<"Ingrese una opcion valida"<<endl;
+				goto archivo;	
+			}
 		}
 }
 
@@ -485,22 +507,24 @@ void encriptArchpr(){
 	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
 	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	encriptado = encriptar(palabra, num, clave);
-	cout<<"Palabra encriptada: "<<encriptado<<endl;
 	archivo:	
-		cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
-		if(opc == 0){
-			cout<<"Volviendo a pagina principal"<<endl;
-		}
-		else if(opc == 1){
-			ofstream salida;
-			salida.open("encriptacion.txt", ios::out);
-			salida<<encriptado<<endl;
-			cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
-			salida.close();
-		}
-		else{
-			cout<<"Ingrese una opción valida"<<endl;
-			goto archivo;	
+		if(encriptado != ""){
+			cout<<"Palabra encriptada: "<<encriptado<<endl;
+			cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
+			if(opc == 0){
+				cout<<"Volviendo a pagina principal"<<endl;
+			}
+			else if(opc == 1){
+				ofstream salida;
+				salida.open("encriptacion.txt", ios::out);
+				salida<<encriptado<<endl;
+				cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+				salida.close();
+			}
+			else{
+				cout<<"Ingrese una opcion valida"<<endl;
+				goto archivo;	
+			}
 		}
 	entrada.close();
 }
@@ -515,22 +539,24 @@ void desencriptArchpr(){
 	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
 	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	palabra = desencriptar(encriptado, num, clave);
-	cout<<"Palabra desencriptada: "<<palabra<<endl;
-	archivo:	
-		cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
-		if(opc == 0){
-			cout<<"Volviendo a pagina principal"<<endl;
-		}
-		else if(opc == 1){
-			ofstream salida;
-			salida.open("desencriptacion.txt", ios::out);
-			salida<<palabra<<endl;
-			cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
-			salida.close();
-		}
-		else{
-			cout<<"Ingrese una opción valida"<<endl;
-			goto archivo;	
+	archivo:
+		if(palabra != ""){
+			cout<<"Palabra desencriptada: "<<palabra<<endl;
+			cout<<"Desea almacenar el resultado en el archivo? (0: No, 1: Si): "; cin>>opc;
+			if(opc == 0){
+				cout<<"Volviendo a pagina principal"<<endl;
+			}
+			else if(opc == 1){
+				ofstream salida;
+				salida.open("desencriptacion.txt", ios::out);
+				salida<<palabra<<endl;
+				cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+				salida.close();
+			}
+			else{
+				cout<<"Ingrese una opcion valida"<<endl;
+				goto archivo;	
+			}
 		}
 	entrada.close();
 }

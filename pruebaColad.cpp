@@ -60,6 +60,9 @@ bool Cola::vacia(){
 void Cola::insertar(int elemento){
 	Nodo* nuevo;
 	nuevo = new Nodo;
+	if(elemento < 0){
+		elemento = elemento + 256;
+	}
 	nuevo->info = elemento;
 	if(vacia()){
 		inicio = nuevo;
@@ -103,9 +106,6 @@ void Cola::strTocola(string pal){
 	for(int i = 0; i < int(pal.length()); i++){
 		char letra = pal[i];
 		int num = int(letra);
-		if(num < 0){
-			num = num + 256;
-		}
 		insertar(num);
 	}
 }

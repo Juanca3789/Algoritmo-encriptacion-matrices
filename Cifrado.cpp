@@ -1,3 +1,22 @@
+/***************************************
+
+	Proyecto Encriptación de Texto
+
+	Juan Sebastian Carvajal Cardenas
+	Juan Carlos Clavijo Triviño
+	
+*****************************************/
+
+/*
+	Información importante:
+		1. Configure el idioma del texto a encriptar antes de realizar la compilación cambiando el valor de 'idioma' de la siguiente manera:
+			0: Español
+			1: Inglés
+			2: Ruso
+		*Si no se selecciona, se definirá el idioma como Ingles automaticamente
+		2. Para archivos de texto personalizados, verifique que el formato de codificación sea ANSI 
+*/
+
 #include <iostream>
 #include <string>
 #include <string.h>
@@ -7,7 +26,23 @@
 #include "inversa.cpp"
 #include "modulos.cpp"
 #include "pruebaColad.cpp"
-#define ascii 437 //Tabla ascii de encriptacion
+#define idioma 0 
+#define esp 1252 //Tablas ascii de encriptacion
+#define eng 437
+#define rus 1251
+
+#if idioma == 0
+	#define ascii 1252
+#elif idioma == 1
+	#define ascii 437
+#elif idioma == 2
+	#define ascii 1251
+#endif
+
+#ifndef ascii
+	#define ascii 437
+#endif
+
 using namespace std;
 
 //Funciones Principales
@@ -110,7 +145,7 @@ int main(){
 				break;
 			}
 			default:{
-				cout<<"Ingrese una opción valida"<<endl;
+				cout<<"Ingrese una opcion valida"<<endl;
 				goto menu;
 				break;
 			}
@@ -124,10 +159,12 @@ Cola* correrc(Cola* palabra, int clave){
 	Cola* Res = new Cola;
 	while(!palabra->vacia()){
 		int letra = palabra->extraer(); //Obtiene cada letra de la palabra ingresada
-			if(letra + clave < 256 && letra + clave >= 32){
-				letra = letra + clave; //Desplaza las letra dentro de la tabla ascii
+			if(letra >= 32 && letra < 256){
+				if(letra + clave < 256 && letra + clave >= 32){
+					letra = letra + clave; //Desplaza las letra dentro de la tabla ascii
+				}
+				Res->insertar(letra);
 			}
-			Res->insertar(letra);
 	}
 	return Res;//Retorna la cadena en forma de cola
 }
@@ -167,8 +204,8 @@ Cola* encriptP(Cola* palabra, Cola* clave){
 		}
 		cout<<" ]"<<endl;
 	}
-	cout<<endl;
 	*/
+	//cout<<endl;
 	double div = (double(palabra->length())/double(cuadrado)); //Divide la longitud de la palabra a encriptar entre el tamaño de la matriz clave para que se permita la multiplicacion
 	dec = div - int(div);
 	red = (1 - dec);
@@ -203,8 +240,8 @@ Cola* encriptP(Cola* palabra, Cola* clave){
 		}
 		cout<<" ]"<<endl;
 	}
-	cout<<endl;
 	*/
+	//cout<<endl;
 	int **matrizRes = new int*[col]; //Crea una nueva matriz resultado del mismo tamaño de la matriz que contiene la palabra
 	for(int i = 0; i < col; i++){
 		matrizRes[i] = new int[cuadrado];
@@ -356,6 +393,9 @@ Cola* desencriptP(Cola* palabra, Cola* clave){
 			}
 			matrizRes[k][l] = contd;
 			matrizRes[k][l] = modulo(matrizRes[k][l], 223); //Halla el modulo de la matriz resultado, obteniendo la matriz de la palabra desencriptda
+			if(matrizRes[k][l] < 32){
+				matrizRes[k][l] = matrizRes[k][l] - 33; //Si el resultado es menor a 32, siginifica que el caracter original es mayor a 223, por lo que al restarle 33 obtendremos el valor negativo del caractï¿½r
+			}
 		}
 	}
 	Cola* res = new Cola;
@@ -374,6 +414,7 @@ Cola* desencriptP(Cola* palabra, Cola* clave){
 			res->insertar(letra); //Almacena en la cola resultado cada caracter
 		}
 	}
+	//res->imprimir();
 	delete []*matrizinv;
 	delete []*matrizPal;
 	delete []*matrizRes;
@@ -423,7 +464,7 @@ string desencriptar(string encriptado, int clave1, string clave2){
 		delete aux;
 		return "";
 	}
-	aux = correrc(aux, -1 * clave1); //Realiza la desencriptación retrocediendo la misma cantidad de caracteres que al inicio
+	aux = correrc(aux, -1 * clave1); //Realiza la desencriptaciï¿½n retrocediendo la misma cantidad de caracteres que al inicio
 	resultado = aux->colaTostr();
 	delete enc;
 	delete cla;
@@ -512,7 +553,7 @@ void encriptArchpr(){
 	ifstream entrada;
 	entrada.open("desencriptacion.txt", ios::in);
 	getline(entrada, palabra, '\n');
-	cout<<"Se encriptará la palabra almacenada en 'desencriptacion.txt': "<<palabra<<endl;
+	cout<<"Se encriptara la palabra almacenada en 'desencriptacion.txt': "<<palabra<<endl;
 	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
 	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	encriptado = encriptar(palabra, num, clave);
@@ -544,7 +585,7 @@ void desencriptArchpr(){
 	ifstream entrada;
 	entrada.open("encriptacion.txt", ios::in);
 	getline(entrada, encriptado, '\n');
-	cout<<"Se encriptará la palabra almacenada en 'encriptacion.txt': "<<encriptado<<endl;
+	cout<<"Se encriptara la palabra almacenada en 'encriptacion.txt': "<<encriptado<<endl;
 	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
 	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	palabra = desencriptar(encriptado, num, clave);

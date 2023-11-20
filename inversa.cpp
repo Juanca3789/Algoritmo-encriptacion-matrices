@@ -4,51 +4,45 @@ using namespace std;
 
 double determin(double **matp, int r){
 	double dete = 0;
-	if(r != 1){
-		if(r == 2){
-			double pos = 1;
-			double neg = -1;
-			for(int i = 0; i < r; i++){
-				for(int j = 0; j < r; j++){
-					if(i == j){
-						pos = pos * matp[i][j];
-					}
-					else{
-						neg = neg * matp[i][j];
-					}
+	if(r == 2){
+		double pos = 1;
+		double neg = -1;
+		for(int i = 0; i < r; i++){
+			for(int j = 0; j < r; j++){
+				if(i == j){
+					pos = pos * matp[i][j];
+				}
+				else{
+					neg = neg * matp[i][j];
 				}
 			}
-			dete = pos + neg;
 		}
-		else{
-			double **mataux = new double*[r-1];
-			for(int i = 0; i < r-1; i++){
-				mataux[i] = new double[r-1];
-			}
-			double mult = 0;
-			double aux = 0;
-			for(int i = 0; i < r; i++){
-				mult = matp[0][i];
-				for(int j = 1; j < r; j++){
-					for(int k = 0; k < r; k++){
-						if(k < i){
-							mataux[j-1][k] = matp[j][k];
-						}
-						else if(k > i){
-							mataux[j-1][k-1] = matp[j][k];
-						}
-					}
-				}
-				aux = mult * determin(mataux, r-1);
-				dete += pow(-1, (i+2)) * aux;
-			}
-			delete []*mataux;
-		}
+		dete = pos + neg;
 	}
 	else{
-		dete = matp[0][0];
+		double **mataux = new double*[r-1];
+		for(int i = 0; i < r-1; i++){
+			mataux[i] = new double[r-1];
+		}
+		double mult = 0;
+		double aux = 0;
+		for(int i = 0; i < r; i++){
+			mult = matp[0][i];
+			for(int j = 1; j < r; j++){
+				for(int k = 0; k < r; k++){
+					if(k < i){
+						mataux[j-1][k] = matp[j][k];
+					}
+					else if(k > i){
+						mataux[j-1][k-1] = matp[j][k];
+					}
+				}
+			}
+			aux = mult * determin(mataux, r-1);
+			dete += pow(-1, (i+2)) * aux;
+		}
+		delete []*mataux;
 	}
-	delete []*matp;
 	return dete;
 }
 

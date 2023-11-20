@@ -25,6 +25,7 @@ void encriptArchpr();
 void desencriptArchpr();
 void encriptArchpe();
 void desenciptArchpe();
+void leerArchpe();
 
 int main(){
 	SetConsoleCP(ascii);
@@ -87,7 +88,7 @@ int main(){
 			case 5:{
 				system("Title Encriptacion Archivo Personalizado");
 				system("cls");
-				encriptCons();
+				encriptArchpe();
 				system("PAUSE");
 				goto menu;
 				break;
@@ -95,7 +96,15 @@ int main(){
 			case 6:{
 				system("Title Desencriptacion Archivo Personalizado");
 				system("cls");
-				encriptCons();
+				desenciptArchpe();
+				system("PAUSE");
+				goto menu;
+				break;
+			}
+			case 7:{
+				system("Lectura de archivos predeterminados");
+				system("cls");
+				leerArchpe();
 				system("PAUSE");
 				goto menu;
 				break;
@@ -115,10 +124,10 @@ Cola* correrc(Cola* palabra, int clave){
 	Cola* Res = new Cola;
 	while(!palabra->vacia()){
 		int letra = palabra->extraer(); //Obtiene cada letra de la palabra ingresada
-		if(letra + clave < 256 && letra + clave > 32){
-			letra = letra + clave; //Desplaza las letra dentro de la tabla ascii
-		}
-		Res->insertar(letra);
+			if(letra + clave < 256 && letra + clave >= 32){
+				letra = letra + clave; //Desplaza las letra dentro de la tabla ascii
+			}
+			Res->insertar(letra);
 	}
 	return Res;//Retorna la cadena en forma de cola
 }
@@ -562,9 +571,107 @@ void desencriptArchpr(){
 }
 
 void encriptArchpe(){
-	
+	string texto = "", clave, encriptado, extension = ".txt", narchivo, linea;
+	int num, opc;
+	cout<<"Ingrese el nombre del archivo txt a encriptar: ";
+	getline(cin, narchivo, '\n');
+	narchivo = narchivo + extension;
+	cout<<"Archivo: "<<narchivo<<endl;
+	ifstream entrada(narchivo.c_str());
+	if(entrada.fail()){
+		cout<<"El archivo no existe"<<endl;
+	}
+	else{
+		cout<<"Leyendo contenido del archivo "<<narchivo;
+		while(!entrada.eof()){
+			cout<<".";
+			getline(entrada, linea, '\n');
+			texto += linea;
+			texto += " ";
+		}
+		texto.erase(texto.end() - 1);
+		cout<<endl<<"Contenido leido: "<<texto<<endl;
+		cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+		cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
+		encriptado = encriptar(texto, num, clave);
+		archivo:	
+			if(encriptado != ""){
+				cout<<"Palabra encriptada: "<<encriptado<<endl;
+				cout<<"Desea almacenar el resultado en el archivo predeterminado? (0: No, 1: Si): "; cin>>opc;
+				if(opc == 0){
+					cout<<"Volviendo a pagina principal"<<endl;
+				}
+				else if(opc == 1){
+					ofstream salida;
+					salida.open("encriptacion.txt", ios::out);
+					salida<<encriptado<<endl;
+					cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+					salida.close();
+				}
+				else{
+					cout<<"Ingrese una opcion valida"<<endl;
+					goto archivo;	
+				}
+			}
+		entrada.close();
+	}
 }
 
 void desenciptArchpe(){
-	
+	string texto, clave, encriptado = "", extension = ".txt", narchivo, linea;
+	int num, opc;
+	cout<<"Ingrese el nombre del archivo txt a desencriptar: ";
+	getline(cin, narchivo, '\n');
+	narchivo = narchivo + extension;
+	cout<<"Archivo: "<<narchivo<<endl;
+	ifstream entrada(narchivo.c_str());
+	if(entrada.fail()){
+		cout<<"El archivo no existe"<<endl;
+	}
+	else{
+		cout<<"Leyendo contenido del archivo "<<narchivo;
+		while(!entrada.eof()){
+			cout<<".";
+			getline(entrada, linea, '\n');
+			encriptado += linea;
+			encriptado += " ";
+		}
+		encriptado.erase(encriptado.end() - 1);
+		cout<<endl<<"Contenido leido: "<<encriptado<<endl;
+		cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+		cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
+		texto = desencriptar(encriptado, num, clave);
+		archivo:	
+			if(texto != ""){
+				cout<<"Palabra desencriptada: "<<texto<<endl;
+				cout<<"Desea almacenar el resultado en el archivo predeterminado? (0: No, 1: Si): "; cin>>opc;
+				if(opc == 0){
+					cout<<"Volviendo a pagina principal"<<endl;
+				}
+				else if(opc == 1){
+					ofstream salida;
+					salida.open("desencriptacion.txt", ios::out);
+					salida<<encriptado<<endl;
+					cout<<"Guardado correctamente, volviendo al menu principal"<<endl;
+					salida.close();
+				}
+				else{
+					cout<<"Ingrese una opcion valida"<<endl;
+					goto archivo;	
+				}
+			}
+	}
+	entrada.close();
+}
+
+void leerArchpe(){
+	ifstream entradaE;
+	ifstream entradaD;
+	string E, D;
+	entradaE.open("encriptacion.txt", ios::in);
+	entradaD.open("desencriptacion.txt", ios::in);
+	getline(entradaE, E, '\n');
+	getline(entradaD, D, '\n');
+	cout<<"Texto de archivo de encriptacion: "<<E<<endl<<endl;
+	cout<<"Texto de archivo de desencriptacion: "<<D<<endl;
 }

@@ -84,6 +84,9 @@ int Cola::extraer(){
 		delete extraido;
 		return elemento;
 	}
+	else{
+		return 0;
+	}
 }
 
 void Cola::imprimir(){

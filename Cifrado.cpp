@@ -54,12 +54,13 @@ string desencriptar(string encriptado, int clave1, string clave2); //Retorna el 
 void crearArchivos(); //Crea los archivos de exportación si aún no existen
 
 //Funciones de Interfaz
-void encriptCons();
-void desencriptCons();
-void encriptArchpr();
-void desencriptArchpr();
-void encriptArchpe();
-void desenciptArchpe();
+void encriptCons(int opcion);
+void desencriptCons(int opcion);
+void encriptArchpr(int opcion);
+void desencriptArchpr(int opcion);
+void encriptArchpe(int opcion);
+void desenciptArchpe(int opcion);
+string leercontArch();
 void leerArchpe();
 
 int main(){
@@ -91,7 +92,11 @@ int main(){
 			case 1:{
 				system("Title Encriptacion Consola");
 				system("cls");
-				encriptCons();
+				int opc;
+				cout<<"Ingrese el metodo mediante el cual desea ingresar la clave de texto (1: Consola, 2: Archivo): ";
+				cin>>opc;
+				cin.ignore();
+				encriptCons(opc);
 				system("PAUSE");
 				goto menu;
 				break;
@@ -99,7 +104,11 @@ int main(){
 			case 2:{
 				system("Title Desencriptacion Consola");
 				system("cls");
-				desencriptCons();
+				int opc;
+				cout<<"Ingrese el metodo mediante el cual desea ingresar la clave de texto (1: Consola, 2: Archivo): ";
+				cin>>opc;
+				cin.ignore();
+				desencriptCons(opc);
 				system("PAUSE");
 				goto menu;
 				break;
@@ -107,7 +116,11 @@ int main(){
 			case 3:{
 				system("Title Encriptacion Archivo Predeterminado");
 				system("cls");
-				encriptArchpr();
+				int opc;
+				cout<<"Ingrese el metodo mediante el cual desea ingresar la clave de texto (1: Consola, 2: Archivo): ";
+				cin>>opc;
+				cin.ignore(opc);
+				encriptArchpr(opc);
 				system("PAUSE");
 				goto menu;
 				break;
@@ -115,7 +128,11 @@ int main(){
 			case 4:{
 				system("Title Desencriptacion Archivo Predeterminado");
 				system("cls");
-				desencriptArchpr();
+				int opc;
+				cout<<"Ingrese el metodo mediante el cual desea ingresar la clave de texto (1: Consola, 2: Archivo): ";
+				cin>>opc;
+				cin.ignore();
+				desencriptArchpr(opc);
 				system("PAUSE");
 				goto menu;
 				break;
@@ -123,7 +140,11 @@ int main(){
 			case 5:{
 				system("Title Encriptacion Archivo Personalizado");
 				system("cls");
-				encriptArchpe();
+				int opc;
+				cout<<"Ingrese el metodo mediante el cual desea ingresar la clave de texto (1: Consola, 2: Archivo): ";
+				cin>>opc;
+				cin.ignore();
+				encriptArchpe(opc);
 				system("PAUSE");
 				goto menu;
 				break;
@@ -131,7 +152,11 @@ int main(){
 			case 6:{
 				system("Title Desencriptacion Archivo Personalizado");
 				system("cls");
-				desenciptArchpe();
+				int opc;
+				cout<<"Ingrese el metodo mediante el cual desea ingresar la clave de texto (1: Consola, 2: Archivo): ";
+				cin>>opc;
+				cin.ignore();
+				desenciptArchpe(opc);
 				system("PAUSE");
 				goto menu;
 				break;
@@ -159,8 +184,8 @@ Cola* correrc(Cola* palabra, int clave){
 	Cola* Res = new Cola;
 	while(!palabra->vacia()){
 		int letra = palabra->extraer(); //Obtiene cada letra de la palabra ingresada
-			if(letra >= 32 && letra < 256){
-				if(letra + clave < 256 && letra + clave >= 32){
+			if(letra >= 32 && letra < 255){
+				if(letra + clave < 255 && letra + clave >= 32){
 					letra = letra + clave; //Desplaza las letra dentro de la tabla ascii
 				}
 				Res->insertar(letra);
@@ -431,7 +456,42 @@ string encriptar(string palabra, int clave1, string clave2){
 	string resultado; //Crea una nueva cadena para retornar la cadena encriptada
 	aux = correrc(pal, clave1); //Realiza la encriptación corriendo caracteres
 	if(cla->length() > 1){
-		aux = encriptP(aux, cla); //Encripta la palabra con el corrimiento de caracteres usando la clave
+		if(cla->length() <= 25){
+			aux = encriptP(aux, cla); //Encripta la palabra con el corrimiento de caracteres usando la clave
+		}
+		else{
+			cout<<"La clave es mayor a 25 caracteres"<<endl;
+			int n = ceil(double(cla->length()) / 25.0);
+			Cola** colas = new Cola*[n];
+			for(int i=0; i<n; i++){
+				colas[i] = new Cola;
+			}
+			for(int i=0; i<n; i++){
+				for(int j=0; j<25; j++){
+					if(!cla->vacia()){
+						colas[i]->insertar(cla->extraer());
+					}
+					else{
+						colas[i]->insertar(32);
+					}
+				}
+			}
+			cla = encriptP(colas[0], colas[1]);
+			if(n > 2){
+				for(int i=2; i<n; i++){
+					cout<<".";
+					Cola* aux2 = new Cola;
+					aux2  = cla;
+					cla = encriptP(aux2, colas[i]);
+					delete aux2;
+				}
+			}
+			for(int i=0; i<n; i++){
+				delete colas[i];
+			}
+			
+			aux = encriptP(aux, cla);
+		}
 	}
 	else{
 		cout<<"La clave debe contener mas de un caracter"<<endl;
@@ -455,7 +515,41 @@ string desencriptar(string encriptado, int clave1, string clave2){
 	cla->strTocola(clave2);
 	string resultado; //Crea una nueva cadena para retornar la cadena desencriptada
 	if(cla->length() > 1){
-		aux = desencriptP(enc, cla); //Desencripta la palabra usando la misma clave que se usó para encriptar
+		if(cla->length() <= 25){
+			aux = desencriptP(enc, cla); //Desencripta la palabra usando la misma clave que se usó para encriptar
+		}
+		else{
+			cout<<"La clave es mayor a 25 caracteres"<<endl;
+			int n = ceil(double(cla->length()) / 25.0);
+			Cola** colas = new Cola*[n];
+			for(int i=0; i<n; i++){
+				colas[i] = new Cola;
+			}
+			for(int i=0; i<n; i++){
+				for(int j=0; j<25; j++){
+					if(!cla->vacia()){
+						colas[i]->insertar(cla->extraer());
+					}
+					else{
+						colas[i]->insertar(32);
+					}
+				}
+			}
+			cla = encriptP(colas[0], colas[1]);
+			if(n > 2){
+				for(int i=2; i<n; i++){
+					cout<<".";
+					Cola* aux2 = new Cola;
+					aux2  = cla;
+					cla = encriptP(aux2, colas[i]);
+					delete aux2;
+				}
+			}
+			for(int i=0; i<n; i++){
+				delete colas[i];
+			}
+			aux = desencriptP(enc, cla);
+		}
 	}
 	else{
 		cout<<"La clave debe contener mas de un caracter"<<endl;
@@ -491,12 +585,17 @@ void crearArchivos(){ //Crea los archivos necesarios si aun no existen
 
 //Funciones interfaz
 
-void encriptCons(){
+void encriptCons(int opcion){
 	string palabra, clave, encriptado;
 	int num, opc;
 	cout<<"Ingrese la palabra a encriptar: "; getline(cin, palabra, '\n');
-	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
-	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
+	if(opcion == 1){
+		cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+		cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
+	}
+	else if(opcion == 2){
+		
+	}
 	encriptado = encriptar(palabra, num, clave);
 	archivo:	
 		if(encriptado != ""){
@@ -519,7 +618,7 @@ void encriptCons(){
 		}
 }
 
-void desencriptCons(){
+void desencriptCons(int opcion){
 	string palabra, clave, encriptado;
 	int num, opc;
 	cout<<"Ingrese la palabra a desencriptar: "; getline(cin, encriptado, '\n');
@@ -547,7 +646,7 @@ void desencriptCons(){
 		}
 }
 
-void encriptArchpr(){
+void encriptArchpr(int opcion){
 	string palabra, clave, encriptado;
 	int num, opc;
 	ifstream entrada;
@@ -579,7 +678,7 @@ void encriptArchpr(){
 	entrada.close();
 }
 
-void desencriptArchpr(){
+void desencriptArchpr(int opcion){
 	string palabra, clave, encriptado;
 	int num, opc;
 	ifstream entrada;
@@ -611,7 +710,7 @@ void desencriptArchpr(){
 	entrada.close();
 }
 
-void encriptArchpe(){
+void encriptArchpe(int opcion){
 	string texto = "", clave, encriptado, extension = ".txt", narchivo, linea;
 	int num, opc;
 	cout<<"Ingrese el nombre del archivo txt a encriptar: ";
@@ -658,26 +757,10 @@ void encriptArchpe(){
 	}
 }
 
-void desenciptArchpe(){
-	string texto, clave, encriptado = "", extension = ".txt", narchivo, linea;
+void desenciptArchpe(int opcion){
+	string texto, clave, encriptado;
 	int num, opc;
-	cout<<"Ingrese el nombre del archivo txt a desencriptar: ";
-	getline(cin, narchivo, '\n');
-	narchivo = narchivo + extension;
-	cout<<"Archivo: "<<narchivo<<endl;
-	ifstream entrada(narchivo.c_str());
-	if(entrada.fail()){
-		cout<<"El archivo no existe"<<endl;
-	}
-	else{
-		cout<<"Leyendo contenido del archivo "<<narchivo;
-		while(!entrada.eof()){
-			cout<<".";
-			getline(entrada, linea, '\n');
-			encriptado += linea;
-			encriptado += " ";
-		}
-		encriptado.erase(encriptado.end() - 1);
+		encriptado = leercontArch();
 		cout<<endl<<"Contenido leido: "<<encriptado<<endl;
 		cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
 		cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
@@ -702,9 +785,30 @@ void desenciptArchpe(){
 				}
 			}
 	}
-	entrada.close();
-}
 
+string leercontArch(){
+	string narchivo, extension = ".txt", linea, res;
+	cout<<"Ingrese el nombre del archivo txt: ";
+	getline(cin, narchivo, '\n');
+	narchivo = narchivo + extension;
+	cout<<"Archivo: "<<narchivo<<endl;
+	ifstream entrada(narchivo.c_str());
+	if(entrada.fail()){
+		cout<<"El archivo no existe"<<endl;
+	}
+	else{
+		cout<<"Leyendo contenido del archivo "<<narchivo;
+		while(!entrada.eof()){
+			cout<<".";
+			getline(entrada, linea, '\n');
+			res += linea;
+			res += " ";
+		}
+		res.erase(res.end() - 1);
+	entrada.close();
+	return res;
+	}
+}
 void leerArchpe(){
 	ifstream entradaE;
 	ifstream entradaD;

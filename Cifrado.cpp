@@ -222,6 +222,7 @@ Cola* encriptP(Cola* palabra, Cola* clave){
 		}
 	}
 	/*
+	cout<<"Matriz clave: "<<endl;
 	for(int i = 0; i < cuadrado; i++){
 		cout<<"[ ";
 		for(int j = 0; j < cuadrado; j++){
@@ -229,8 +230,8 @@ Cola* encriptP(Cola* palabra, Cola* clave){
 		}
 		cout<<" ]"<<endl;
 	}
+	cout<<endl;
 	*/
-	//cout<<endl;
 	double div = (double(palabra->length())/double(cuadrado)); //Divide la longitud de la palabra a encriptar entre el tamaño de la matriz clave para que se permita la multiplicacion
 	dec = div - int(div);
 	red = (1 - dec);
@@ -258,6 +259,7 @@ Cola* encriptP(Cola* palabra, Cola* clave){
 		}
 	}
 	/*
+	cout<<"Matriz Palabra: "<<endl;
 	for(int i = 0; i < col; i++){
 		cout<<"[ ";
 		for(int j = 0; j < cuadrado; j++){
@@ -265,8 +267,8 @@ Cola* encriptP(Cola* palabra, Cola* clave){
 		}
 		cout<<" ]"<<endl;
 	}
+	cout<<endl;
 	*/
-	//cout<<endl;
 	int **matrizRes = new int*[col]; //Crea una nueva matriz resultado del mismo tamaño de la matriz que contiene la palabra
 	for(int i = 0; i < col; i++){
 		matrizRes[i] = new int[cuadrado];
@@ -289,6 +291,7 @@ Cola* encriptP(Cola* palabra, Cola* clave){
 		}
 	}
 	/*
+	cout<<"Matriz Encriptada: "<<endl;
 	for(int i = 0; i < col; i++){
 		cout<<"[ ";
 		for(int j = 0; j < cuadrado; j++){
@@ -296,6 +299,7 @@ Cola* encriptP(Cola* palabra, Cola* clave){
 		}
 		cout<<" ]"<<endl;
 	}
+	cout<<endl;
 	*/
 	delete []*matrizPal;
 	delete []*matrizRes;
@@ -333,6 +337,7 @@ Cola* desencriptP(Cola* palabra, Cola* clave){
 		}
 	}
 	/*
+	cout<<"Matriz Clave: "<<endl;
 	for(int i = 0; i < cuadrado; i++){
 		cout<<"[ ";
 		for(int j = 0; j < cuadrado; j++){
@@ -343,9 +348,11 @@ Cola* desencriptP(Cola* palabra, Cola* clave){
 	cout<<endl;
 	*/
 	double det = determin(matrizClave, cuadrado); //Halla el determinante de la matriz clave
+	//cout<<det<<endl;
 	//cout<<invmod(det, 223)<<endl;
 	matadj(matrizClave, matrizinv, cuadrado); //Halla la matriz adjunta de la matriz clave
 	mattra(matrizinv, matrizClave, cuadrado); //Transpone la matriz adjunta
+	//cout<<"Inversa modular: "<<endl;
 	for(int i = 0; i < cuadrado; i++){
 		//cout<<"[ ";
 		for(int j = 0; j < cuadrado; j++){
@@ -356,6 +363,7 @@ Cola* desencriptP(Cola* palabra, Cola* clave){
 	}
 	//cout<<endl;
 	/*
+	cout<<"Modulo Inversa Modular: "<<endl;
 	for(int i = 0; i < cuadrado; i++){
 		cout<<"[ ";
 		for(int j = 0; j < cuadrado; j++){
@@ -397,6 +405,7 @@ Cola* desencriptP(Cola* palabra, Cola* clave){
 		}
 	}
 	/*
+	cout<<"Matriz Palabra Encriptada: "<<endl;
 	for(int i = 0; i < col; i++){
 		cout<<"[ ";
 		for(int j = 0; j < cuadrado; j++){
@@ -425,6 +434,7 @@ Cola* desencriptP(Cola* palabra, Cola* clave){
 	}
 	Cola* res = new Cola;
 	/*
+	cout<<"Matriz desencriptada: "<<endl;
 	for(int i = 0; i < col; i++){
 		cout<<"[ ";
 		for(int j = 0; j < cuadrado; j++){
@@ -461,25 +471,37 @@ string encriptar(string palabra, int clave1, string clave2){
 		}
 		else{
 			cout<<"La clave es mayor a 25 caracteres"<<endl;
+			int l = cla->length();
 			int n = ceil(double(cla->length()) / 25.0);
 			Cola** colas = new Cola*[n];
 			for(int i=0; i<n; i++){
 				colas[i] = new Cola;
 			}
 			for(int i=0; i<n; i++){
-				for(int j=0; j<25; j++){
-					if(!cla->vacia()){
-						colas[i]->insertar(cla->extraer());
+				if(i % 2 == 0){
+					for(int j=0; j<25; j++){
+						if(!cla->vacia() && j < ceil(l / n)){
+							colas[i]->insertar(cla->extraer());
+						}
+						else{
+							colas[i]->insertar(32);
+						}
 					}
-					else{
-						colas[i]->insertar(32);
+				}
+				else{
+					for(int j = 0; j < 25; j++){
+						if(j % n == 0){
+							colas[i]->insertar(32);
+						}
+						else{
+							colas[i]->insertar(cla->extraer());
+						}
 					}
 				}
 			}
 			cla = encriptP(colas[0], colas[1]);
 			if(n > 2){
 				for(int i=2; i<n; i++){
-					cout<<".";
 					Cola* aux2 = new Cola;
 					aux2  = cla;
 					cla = encriptP(aux2, colas[i]);
@@ -520,25 +542,37 @@ string desencriptar(string encriptado, int clave1, string clave2){
 		}
 		else{
 			cout<<"La clave es mayor a 25 caracteres"<<endl;
+			int l = cla->length();
 			int n = ceil(double(cla->length()) / 25.0);
 			Cola** colas = new Cola*[n];
 			for(int i=0; i<n; i++){
 				colas[i] = new Cola;
 			}
 			for(int i=0; i<n; i++){
-				for(int j=0; j<25; j++){
-					if(!cla->vacia()){
-						colas[i]->insertar(cla->extraer());
+				if(i % 2 == 0){
+					for(int j=0; j<25; j++){
+						if(!cla->vacia() && j < ceil(l / n)){
+							colas[i]->insertar(cla->extraer());
+						}
+						else{
+							colas[i]->insertar(32);
+						}
 					}
-					else{
-						colas[i]->insertar(32);
+				}
+				else{
+					for(int j = 0; j < 25; j++){
+						if(j % n == 0){
+							colas[i]->insertar(32);
+						}
+						else{
+							colas[i]->insertar(cla->extraer());
+						}
 					}
 				}
 			}
 			cla = encriptP(colas[0], colas[1]);
 			if(n > 2){
 				for(int i=2; i<n; i++){
-					cout<<".";
 					Cola* aux2 = new Cola;
 					aux2  = cla;
 					cla = encriptP(aux2, colas[i]);
@@ -591,11 +625,11 @@ void encriptCons(int opcion){
 	cout<<"Ingrese la palabra a encriptar: "; getline(cin, palabra, '\n');
 	if(opcion == 1){
 		cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
-		cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	}
 	else if(opcion == 2){
-		
+		clave = leercontArch();
 	}
+	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	encriptado = encriptar(palabra, num, clave);
 	archivo:	
 		if(encriptado != ""){
@@ -622,7 +656,12 @@ void desencriptCons(int opcion){
 	string palabra, clave, encriptado;
 	int num, opc;
 	cout<<"Ingrese la palabra a desencriptar: "; getline(cin, encriptado, '\n');
-	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+	if(opcion == 1){
+		cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+	}
+	else if(opcion == 2){
+		clave = leercontArch();
+	}
 	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	palabra = desencriptar(encriptado, num, clave);
 	archivo:
@@ -653,7 +692,12 @@ void encriptArchpr(int opcion){
 	entrada.open("desencriptacion.txt", ios::in);
 	getline(entrada, palabra, '\n');
 	cout<<"Se encriptara la palabra almacenada en 'desencriptacion.txt': "<<palabra<<endl;
-	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+	if(opcion == 1){
+		cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+	}
+	else if(opcion == 2){
+		clave = leercontArch();
+	}
 	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	encriptado = encriptar(palabra, num, clave);
 	archivo:	
@@ -685,7 +729,12 @@ void desencriptArchpr(int opcion){
 	entrada.open("encriptacion.txt", ios::in);
 	getline(entrada, encriptado, '\n');
 	cout<<"Se encriptara la palabra almacenada en 'encriptacion.txt': "<<encriptado<<endl;
-	cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+	if(opcion == 1){
+		cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+	}
+	else if(opcion == 2){
+		clave = leercontArch();
+	}
 	cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 	palabra = desencriptar(encriptado, num, clave);
 	archivo:
@@ -731,7 +780,12 @@ void encriptArchpe(int opcion){
 		}
 		texto.erase(texto.end() - 1);
 		cout<<endl<<"Contenido leido: "<<texto<<endl;
-		cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+		if(opcion == 1){
+			cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+		}
+		else if(opcion == 2){
+			clave = leercontArch();
+		}
 		cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 		encriptado = encriptar(texto, num, clave);
 		archivo:	
@@ -762,7 +816,12 @@ void desenciptArchpe(int opcion){
 	int num, opc;
 		encriptado = leercontArch();
 		cout<<endl<<"Contenido leido: "<<encriptado<<endl;
-		cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+		if(opcion == 1){
+			cout<<"Ingrese la clave de encriptacion: "; getline(cin, clave, '\n');
+		}
+		else if(opcion == 2){
+			clave = leercontArch();
+		}
 		cout<<"Ingrese la clave numerica de encriptacion: "; cin>>num;
 		texto = desencriptar(encriptado, num, clave);
 		archivo:	
@@ -806,9 +865,11 @@ string leercontArch(){
 		}
 		res.erase(res.end() - 1);
 	entrada.close();
+	cout<<endl;
 	return res;
 	}
 }
+
 void leerArchpe(){
 	ifstream entradaE;
 	ifstream entradaD;
